@@ -164,3 +164,4 @@ class FileViewTests(APITestCase):
         
         # Verify the service was called with the correct arguments
         mock_update.assert_called_once()    
+
