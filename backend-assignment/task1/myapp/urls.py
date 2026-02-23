@@ -1,5 +1,5 @@
 from django.urls import path
-from myapp.views import RegisterView, FileUploadView, FileListView, FileDetailView, FileDeleteView, FileUpdateView
+from myapp.views import RegisterView, FileUploadView, FileListView, FileDetailView, FileDeleteView, FileUpdateView, FileDownloadView ,FileLinkView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns=[
@@ -12,4 +12,7 @@ urlpatterns=[
     path('detail/<uuid:pk>/', FileDetailView.as_view(), name='file-detail'),
     path('delete/<uuid:pk>/', FileDeleteView.as_view(), name='file-delete'),
     path('update/<uuid:pk>/', FileUpdateView.as_view(), name='file-update'),
+    #DOWNLOAD
+    path('files/<uuid:pk>/get-link/', FileLinkView.as_view(), name='file-get-link'),
+    path('download/<uuid:pk>/', FileDownloadView.as_view(), name='file-download'),
 ]

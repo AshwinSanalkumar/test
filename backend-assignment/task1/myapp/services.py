@@ -3,6 +3,7 @@ import hashlib
 from django.conf import settings
 from rest_framework.exceptions import ValidationError
 import mimetypes
+from django.shortcuts import get_object_or_404
 
 class AuthService:
     @staticmethod
@@ -74,3 +75,13 @@ class FileStorageService:
         file_instance.save()
         file_instance.refresh_from_db()
         return file_instance
+    
+class FileStorageService:
+    @classmethod
+    def get_valid_file(cls, file_id, user):
+        return get_object_or_404(
+            UserFile, 
+            pk=file_id, 
+            owner=user, 
+            is_archived=False
+        )
