@@ -6,7 +6,7 @@ from .serializers import RegistrationSerializer,UserFileSerializer
 from .services import AuthService, FileStorageService
 from django.shortcuts import get_object_or_404
 from .models import UserFile
-
+from rest_framework.exceptions import ValidationError
 
 class RegisterView(APIView):
     permission_classes=[AllowAny]
@@ -77,3 +77,25 @@ class FileDeleteView(APIView):
         file_instance.is_archived = True
         file_instance.save()
         return Response({"status": "File Soft Deleted"}, status=status.HTTP_200_OK)
+    
+class FileUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, pk):
+        file_instance = get_object_or_404(UserFile, pk=pk, owner=request.user)
+    
+        new_file = request.FILES.get('file')
+
+        try:
+            updated_file = FileStorageService.update_file_record(
+                file_instance=file_instance,
+                data=request.data,
+                new_file_obj=new_file
+            )
+            
+            serializer = UserFileSerializer(updated_file)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+            
+        except ValidationError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": "An unexpected error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

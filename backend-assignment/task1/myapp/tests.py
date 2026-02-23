@@ -64,7 +64,7 @@ class FileViewTests(APITestCase):
             display_name = "test_doc.txt"  
             original_filename = "test_doc.txt"
             file_size_bytes = 2048
-            category = "General"
+            description = "General"
             checksum_sha256 = "d7a8fbb307d7809469ca9abcb3c0bb21"
             is_archived = False
             content = MagicMock()
@@ -119,3 +119,48 @@ class FileViewTests(APITestCase):
         
         file_record.refresh_from_db()
         self.assertTrue(file_record.is_archived)
+
+    @patch('myapp.services.FileStorageService.update_file_record')
+    def test_file_update_success(self, mock_update):
+        """Test partial and full updates of a file record."""
+        # 1. Create a real file record in the DB to update
+        existing_file = UserFile.objects.create(
+            owner=self.user, 
+            original_filename="old_file.txt", 
+            file_size_bytes=100,
+            display_name="Old Version"
+        )
+        url = reverse('file-update', kwargs={'pk': existing_file.pk})
+
+        # 2. Mock the service return value for a successful update
+        class UpdatedFileStub:
+            id = existing_file.pk
+            display_name = "New Version"
+            description = "Updated description"
+            original_filename = "new_binary.png"  # Filename changed!
+            file_size_bytes = 5000               # Size changed!
+            mime_type = "image/png"
+            checksum_sha256 = "mocked_hash_123"
+            created_at = "2026-02-23T06:37:40Z"
+
+        mock_update.return_value = UpdatedFileStub()
+
+        # 3. Prepare payload with a new file
+        new_dummy_file = SimpleUploadedFile("new_binary.png", b"new content", content_type="image/png")
+        payload = {
+            'display_name': 'New Version',
+            'description': 'Updated description',
+            'file': new_dummy_file
+        }
+
+        # 4. Perform the request
+        response = self.client.post(url, payload, format='multipart')
+
+        # 5. Assertions
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['display_name'], "New Version")
+        self.assertEqual(response.data['original_filename'], "new_binary.png")
+        self.assertEqual(response.data['file_size_bytes'], 5000)
+        
+        # Verify the service was called with the correct arguments
+        mock_update.assert_called_once()    
