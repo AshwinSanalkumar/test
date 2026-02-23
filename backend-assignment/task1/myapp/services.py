@@ -76,7 +76,6 @@ class FileStorageService:
         file_instance.refresh_from_db()
         return file_instance
     
-class FileStorageService:
     @classmethod
     def get_valid_file(cls, file_id, user):
         return get_object_or_404(
