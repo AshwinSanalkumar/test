@@ -1,6 +1,9 @@
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
+import os
+import uuid
+from django.conf import settings
 
 class UserManager(BaseUserManager):
     def create_user(self,email,password=None, **extra_fields):
@@ -29,3 +32,24 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+    
+#FILE STORAGE
+
+def get_file_storage_path(instance, filename):
+    ext = filename.split('.')[-1]
+    return os.path.join(f'vault/user_{instance.owner.id}', f"{uuid.uuid4()}.{ext}")
+
+class UserFile(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    
+    content = models.FileField(upload_to=get_file_storage_path)
+    checksum_sha256 = models.CharField(max_length=64)
+    file_size_bytes = models.BigIntegerField()
+    
+    display_name = models.CharField(max_length=255)
+    original_filename = models.CharField(max_length=255)
+    category = models.CharField(max_length=100, default='General')
+    
+    is_archived = models.BooleanField(default=False, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)

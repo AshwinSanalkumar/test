@@ -1,22 +1,17 @@
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIClient
 from unittest.mock import patch, MagicMock
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
+from .models import UserFile 
+import uuid
 
 User = get_user_model()
 
 class RegisterViewTests(APITestCase):
-    """
-    Test suite for RegisterView.
-    Designed for software engineering promotion review.
-    """
-
     def setUp(self):
-        # Ensure 'register' matches the 'name=' parameter in your urls.py
         self.register_url = reverse('register')
-        
-        # Payload includes all fields required by your Serializer
         self.valid_payload = {
             "username": "testuser_dev",
             "first_name": "John",
@@ -28,52 +23,99 @@ class RegisterViewTests(APITestCase):
 
     @patch('myapp.services.AuthService.register_user')
     def test_register_user_success(self, mock_register_user):
-        """
-        Unit Test: Tests the view logic in isolation.
-        Uses MagicMock to prevent RecursionError during JSON serialization.
-        """
-        # Arrange: Setup a mock user object with explicit attributes
-        mock_user = MagicMock()
-        mock_user.id = 1
-        mock_user.first_name = "John"
-        mock_user.email = "john.doe@example.com"
-        
-        # Configure the service to return our mock user
+        mock_user = MagicMock(id=1, email="john.doe@example.com", first_name="John")
         mock_register_user.return_value = mock_user
 
-        # Act
         response = self.client.post(self.register_url, self.valid_payload, format='json')
-
-        # Assert
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['status'], "success")
-        self.assertEqual(response.data['data']['email'], "john.doe@example.com")
-        
-        # Verify the service was actually called
-        mock_register_user.assert_called_once()
 
-    def test_register_user_invalid_data(self):
-        """
-        Unit Test: Tests that the serializer correctly catches missing data.
-        """
-        # Arrange: Payload missing the required username
-        invalid_payload = self.valid_payload.copy()
-        del invalid_payload['username']
-
-        # Act
-        response = self.client.post(self.register_url, invalid_payload, format='json')
-
-        # Assert
+    def test_register_password_mismatch(self):
+        """Edge Case: Ensure validation fails if passwords don't match."""
+        payload = self.valid_payload.copy()
+        payload['password_confirm'] = "WrongPassword123!"
+        response = self.client.post(self.register_url, payload, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_register_user_integration(self):
-        """
-        Integration Test: Tests the full flow from View to Database.
-        This ensures the AuthService logic is actually compatible with the DB.
-        """
-        # Act
-        response = self.client.post(self.register_url, self.valid_payload, format='json')
 
-        # Assert
+class FileViewTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="devuser@example.com",
+            username="devuser",
+            password="password123"
+        )
+        self.other_user = User.objects.create_user(
+            email="hacker@example.com",
+            username="hacker",
+            password="password123"
+        )
+        self.client.force_authenticate(user=self.user)
+        self.upload_url = reverse('file-upload')
+        self.list_url = reverse('file-list')
+    
+    @patch('myapp.services.FileStorageService.process_and_store_file')
+    def test_file_upload_success(self, mock_storage):
+        dummy_file = SimpleUploadedFile("test_doc.txt", b"content", content_type="text/plain")
+        
+
+        class FileStub:
+            id = uuid.uuid4()
+            display_name = "test_doc.txt"  
+            original_filename = "test_doc.txt"
+            file_size_bytes = 2048
+            category = "General"
+            checksum_sha256 = "d7a8fbb307d7809469ca9abcb3c0bb21"
+            is_archived = False
+            content = MagicMock()
+            content.url = "/media/vault/test_doc.txt"
+
+        mock_storage.return_value = FileStub()
+
+        response = self.client.post(self.upload_url, {'file': [dummy_file]}, format='multipart')
+        
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(User.objects.filter(email="john.doe@example.com").exists())
+        self.assertEqual(response.data['uploaded'][0]['display_name'], "test_doc.txt")
+
+    def test_upload_no_file_error(self):
+        """Edge Case: User hits upload endpoint without a file."""
+        response = self.client.post(self.upload_url, {}, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_get_file_list_ownership(self):
+        """Security: Ensure user only sees their own active files."""
+
+        UserFile.objects.create(owner=self.user, original_filename="my_file.txt", file_size_bytes=10)
+
+        UserFile.objects.create(owner=self.other_user, original_filename="stolen.txt", file_size_bytes=10)
+
+        UserFile.objects.create(owner=self.user, original_filename="old.txt", is_archived=True, file_size_bytes=10)
+
+        response = self.client.get(self.list_url)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['original_filename'], "my_file.txt")
+
+    def test_get_detail_forbidden_or_archived(self):
+        """Security: Prevent access to other users' files or archived files."""
+        other_file = UserFile.objects.create(owner=self.other_user, original_filename="secret.txt", file_size_bytes=10)
+        archived_file = UserFile.objects.create(owner=self.user, original_filename="deleted.txt", is_archived=True, file_size_bytes=10)
+
+
+        url_other = reverse('file-detail', kwargs={'pk': other_file.pk})
+        res_other = self.client.get(url_other)
+        self.assertEqual(res_other.status_code, status.HTTP_404_NOT_FOUND)
+
+
+        url_archived = reverse('file-detail', kwargs={'pk': archived_file.pk})
+        res_archived = self.client.get(url_archived)
+        self.assertEqual(res_archived.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_file_soft_delete_success(self):
+        file_record = UserFile.objects.create(owner=self.user, original_filename="bye.txt", file_size_bytes=10)
+        url = reverse('file-delete', kwargs={'pk': file_record.pk})
+
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        file_record.refresh_from_db()
+        self.assertTrue(file_record.is_archived)

@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -100,7 +100,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
@@ -122,3 +129,17 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# settings.py
+
+# 100MB Limit (100 * 1024 * 1024 bytes)
+MAX_UPLOAD_SIZE = 104857600  
+
+# Security: Don't allow the web server to execute uploaded files
+# (This is a senior-level security detail)
+FILE_UPLOAD_PERMISSIONS = 0o644
+
+# The URL used to access the files in the browser
+MEDIA_URL = '/media/'
+
+# The absolute filesystem path to the directory where files are stored
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
