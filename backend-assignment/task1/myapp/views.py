@@ -7,6 +7,8 @@ from .services import AuthService, FileStorageService
 from django.shortcuts import get_object_or_404
 from .models import UserFile
 from rest_framework.exceptions import ValidationError
+from django.http import FileResponse
+from django.urls import reverse
 
 class RegisterView(APIView):
     permission_classes=[AllowAny]
@@ -99,3 +101,25 @@ class FileUpdateView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"error": "An unexpected error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class FileLinkView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, pk):
+        file_obj = FileStorageService.get_valid_file(pk, request.user)
+        download_path = reverse('file-download', kwargs={'pk': file_obj.pk})
+        full_url = request.build_absolute_uri(download_path)
+
+        return Response({
+            "download_url": full_url,
+            "filename": file_obj.original_filename
+        })
+
+class FileDownloadView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        file_instance = FileStorageService.get_valid_file(pk, request.user)
+        file_handle = file_instance.content.open('rb')
+        response = FileResponse(file_handle, content_type=file_instance.mime_type)
+        response['Content-Disposition'] = f'attachment; filename="{file_instance.display_name}"'
+        return response
