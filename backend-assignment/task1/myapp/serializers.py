@@ -29,7 +29,7 @@ class UserFileSerializer(serializers.ModelSerializer):
         fields = [
             'id', 
             'display_name', 
-            'category', 
+            'description', 
             'original_filename', 
             'file_size_bytes', 
             'size_readable', 

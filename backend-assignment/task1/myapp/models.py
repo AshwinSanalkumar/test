@@ -49,7 +49,7 @@ class UserFile(models.Model):
     
     display_name = models.CharField(max_length=255)
     original_filename = models.CharField(max_length=255)
-    category = models.CharField(max_length=100, default='General')
-    
+    description = models.TextField(blank=True, null=True) # Changed from category
+    mime_type = models.CharField(max_length=100, editable=False)
     is_archived = models.BooleanField(default=False, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
