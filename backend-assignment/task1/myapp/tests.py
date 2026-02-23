@@ -165,3 +165,52 @@ class FileViewTests(APITestCase):
         # Verify the service was called with the correct arguments
         mock_update.assert_called_once()    
 
+    @patch('myapp.services.FileStorageService.get_valid_file')
+    def test_download_file_binary_stream(self, mock_get_file):
+        """Verify that the download view streams the file with correct headers."""
+        # 1. Mock the file and the binary content
+        mock_file = MagicMock()
+        mock_file.display_name = "test_download.txt"
+        mock_file.mime_type = "text/plain"
+        
+        # Mock the .open() method to return a stream
+        from io import BytesIO
+        mock_file.content.open.return_value = BytesIO(b"Hello World")
+        mock_get_file.return_value = mock_file
+
+        # 2. Request the download
+        url = reverse('file-download', kwargs={'pk': uuid.uuid4()})
+        response = self.client.get(url)
+
+        # 3. Assertions
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response['Content-Type'], "text/plain")
+        # Ensure the filename is in the header
+        self.assertIn('filename="test_download.txt"', response['Content-Disposition'])
+        # Verify it actually streamed the content
+        self.assertEqual(b"".join(response.streaming_content), b"Hello World")
+
+    @patch('myapp.services.FileStorageService.get_valid_file')
+    def test_download_file_binary_stream(self, mock_get_file):
+        """Verify that the download view streams the file with correct headers."""
+        # 1. Mock the file and the binary content
+        mock_file = MagicMock()
+        mock_file.display_name = "test_download.txt"
+        mock_file.mime_type = "text/plain"
+        
+        # Mock the .open() method to return a stream
+        from io import BytesIO
+        mock_file.content.open.return_value = BytesIO(b"Hello World")
+        mock_get_file.return_value = mock_file
+
+        # 2. Request the download
+        url = reverse('file-download', kwargs={'pk': uuid.uuid4()})
+        response = self.client.get(url)
+
+        # 3. Assertions
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response['Content-Type'], "text/plain")
+        # Ensure the filename is in the header
+        self.assertIn('filename="test_download.txt"', response['Content-Disposition'])
+        # Verify it actually streamed the content
+        self.assertEqual(b"".join(response.streaming_content), b"Hello World")
