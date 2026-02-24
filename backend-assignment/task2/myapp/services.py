@@ -13,3 +13,11 @@ class AuthService:
             first_name=validated_data['first_name'].strip().capitalize(),
             last_name=validated_data['last_name'].strip().capitalize()
         )
+    
+class ArithmeticService:
+    @staticmethod
+    def add(num1,num2):
+        try:
+            return float(num1) + float(num2)
+        except (ValueError,TypeError):
+            return None

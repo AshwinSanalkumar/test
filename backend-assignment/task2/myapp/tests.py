@@ -2,6 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
+from rest_framework_simplejwt.tokens import RefreshToken
 
 class RegistrationTests(APITestCase):
     def setUp(self):
@@ -54,3 +55,45 @@ class RegistrationTests(APITestCase):
         response = self.client.post(self.url, payload, format='json')
         
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+class ArithmeticTests(APITestCase):
+    def setUp(self):
+        # 1. Create a user for authentication
+        self.user = User.objects.create_user(
+            username="mathuser", 
+            email="math@example.com", 
+            password="password123"
+        )
+        
+        # 2. Generate a JWT token for the user
+        refresh = RefreshToken.for_user(self.user)
+        self.token = str(refresh.access_token)
+        
+        # 3. Authorize the client for all requests in this class
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
+
+    def test_addition_success(self):
+        """Test adding two valid numbers."""
+        # Pattern: calculate/sum/5/4/
+        url = reverse('add-operation', kwargs={'num1': '10.5', 'num2': '4.5'})
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['result'], 15.0)
+        self.assertEqual(response.data['operation'], 'sum')
+
+    def test_addition_invalid_input(self):
+        """Test adding with non-numeric strings."""
+        url = reverse('add-operation', kwargs={'num1': 'abc', 'num2': '5'})
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('error', response.data)
+
+    def test_addition_unauthenticated(self):
+        """Test that unauthenticated users cannot access the math API."""
+        self.client.credentials()  # Wipe the token
+        url = reverse('add-operation', kwargs={'num1': '5', 'num2': '5'})
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

@@ -1,8 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import AllowAny
-from .services import AuthService
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from .services import AuthService, ArithmeticService
 from .serializers import RegisterSerializer
 
 class RegisterView(APIView):
@@ -25,3 +25,21 @@ class RegisterView(APIView):
                 "email":user.email
             }
         },status=status.HTTP_201_CREATED)
+    
+class AdditionView(APIView):
+    permission_classes=[IsAuthenticated]
+
+    def get(self,request,num1,num2):
+        result= ArithmeticService.add(num1,num2)
+
+        if result is None:
+            return Response(
+                {"error":"Invalid Input. Both parameters must be numbers."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        return Response({
+            "operation": "sum",
+            "result": result
+        }, status=status.HTTP_200_OK)
+
