@@ -1,0 +1,15 @@
+from django.contrib.auth.models import User # This uses Django's built-in User
+
+class AuthService:
+    @staticmethod
+    def register_user(validated_data: dict) -> User:
+        """
+        Business Logic: Normalizes data and persists user.
+        """
+        return User.objects.create_user(
+            username=validated_data['username'].lower().strip(),
+            email=validated_data['email'].lower().strip(),
+            password=validated_data['password'],
+            first_name=validated_data['first_name'].strip().capitalize(),
+            last_name=validated_data['last_name'].strip().capitalize()
+        )
