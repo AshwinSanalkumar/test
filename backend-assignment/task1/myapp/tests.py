@@ -214,3 +214,18 @@ class FileViewTests(APITestCase):
         self.assertIn('filename="test_download.txt"', response['Content-Disposition'])
         # Verify it actually streamed the content
         self.assertEqual(b"".join(response.streaming_content), b"Hello World")
+
+def test_logout_success(self):
+        # 1. Manually generate a token for the user
+        from rest_framework_simplejwt.tokens import RefreshToken
+        refresh = RefreshToken.for_user(self.user)
+        
+        url = reverse('auth-logout')
+        payload = {"refresh": str(refresh)}
+        
+        # 2. Perform logout
+        response = self.client.post(url, payload, format='json')
+        
+        # 3. Assertions
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['message'], "Logged out successfully.")

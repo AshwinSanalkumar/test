@@ -4,6 +4,7 @@ from django.conf import settings
 from rest_framework.exceptions import ValidationError
 import mimetypes
 from django.shortcuts import get_object_or_404
+from rest_framework_simplejwt.tokens import RefreshToken
 
 class AuthService:
     @staticmethod
@@ -19,6 +20,17 @@ class AuthService:
             first_name=validated_data['first_name'].strip().capitalize(),
             last_name=validated_data['last_name'].strip().capitalize()
         )
+    
+    @staticmethod
+    def logout_user(refresh_token_str: str):
+        """
+        Business Logic: Blacklists the provided refresh token.
+        """
+        try:
+            token = RefreshToken(refresh_token_str)
+            token.blacklist()
+        except Exception as _e:
+            raise ValidationError("Invalid or already blacklisted token.")
     
 #FILE SERVICES
 class FileStorageService:

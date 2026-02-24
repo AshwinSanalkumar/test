@@ -27,6 +27,27 @@ class RegisterView(APIView):
                 "email":user.email
             }
         },status=status.HTTP_201_CREATED)
+    
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        refresh_token = request.data.get("refresh")
+        
+        if not refresh_token:
+            return Response(
+                {"error": "Refresh token is required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            AuthService.logout_user(refresh_token)
+            return Response(
+                {"message": "Logged out successfully."}, 
+                status=status.HTTP_200_OK
+            )
+        except ValidationError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class FileUploadView(APIView):
     permission_classes = [IsAuthenticated]
