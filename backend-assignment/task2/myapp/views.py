@@ -76,3 +76,19 @@ class DivisionView(APIView):
             "operation": "Division",
             "result": result
         }, status=status.HTTP_200_OK)
+    
+class MultiplicationView(APIView):
+    permission_classes=[IsAuthenticated]
+
+    def get(self,request,num1,num2):
+        result= ArithmeticService.product(num1,num2)
+
+        if result is None:
+            return Response(
+                {"error":"Invalid Input. Both parameters must be numbers."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return Response({
+            "operation": "multiplication",
+            "result": result
+        }, status=status.HTTP_200_OK)

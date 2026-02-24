@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
-from myapp.views import RegisterView, AdditionView, SubtractionView ,DivisionView
+from myapp.views import RegisterView, AdditionView, SubtractionView ,DivisionView, MultiplicationView
 
 
 urlpatterns = [
@@ -11,4 +11,5 @@ urlpatterns = [
     path('calculate/sum/<str:num1>/<str:num2>/',AdditionView.as_view(),name='add-operation'),
     path('calculate/difference/<str:num1>/<str:num2>/',SubtractionView.as_view(),name='sub-operation'),
     path('calculate/divide/<str:num1>/<str:num2>/',DivisionView.as_view(),name='div-operation'),
+    path('calculate/multiply/<str:num1>/<str:num2>/',MultiplicationView.as_view(),name='mul-operation'),
 ]
