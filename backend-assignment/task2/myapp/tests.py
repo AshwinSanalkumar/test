@@ -126,7 +126,7 @@ class ArithmeticTests(APITestCase):
         self.assertIn('error', response.data)
 
     def test_division_success(self):
-        """Test subtracting two valid numbers."""
+        """Test dividing two valid numbers."""
         # Pattern: calculate/div/10/2/
         url = reverse('div-operation', kwargs={'num1': '10', 'num2': '2'})
         response = self.client.get(url)
@@ -136,16 +136,34 @@ class ArithmeticTests(APITestCase):
         self.assertEqual(response.data['operation'], 'Division')
 
     def test_division_invalid_result(self):
-        """Test subtraction resulting in a negative number."""
+        """Test dividing resulting in a negative number."""
         url = reverse('div-operation', kwargs={'num1': '10', 'num2': '0'})
         response = self.client.get(url)
         
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('error', response.data)
 
-    def test_subtraction_invalid_input(self):
-        """Test subtraction with non-numeric strings."""
+    def test_dividing_invalid_input(self):
+        """Test dividing with non-numeric strings."""
         url = reverse('div-operation', kwargs={'num1': '10', 'num2': 'not_a_number'})
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('error', response.data)
+
+    def test_multiplication_success(self):
+        """Test multiplying two valid numbers."""
+        # Pattern: calculate/multiply/5/4/
+        url = reverse('mul-operation', kwargs={'num1': '5', 'num2': '4'})
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['result'], 20.0)
+        self.assertEqual(response.data['operation'], 'multiplication')
+
+    def test_multiplication_invalid_input(self):
+        """Test multiplying with non-numeric strings."""
+        url = reverse('mul-operation', kwargs={'num1': 'abc', 'num2': '5'})
         response = self.client.get(url)
         
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
