@@ -1,11 +1,12 @@
 from django.urls import path
-from myapp.views import RegisterView, FileUploadView, FileListView, FileDetailView, FileDeleteView, FileUpdateView, FileDownloadView ,FileLinkView
+from myapp.views import RegisterView,LogoutView, FileUploadView, FileListView, FileDetailView, FileDeleteView, FileUpdateView, FileDownloadView ,FileLinkView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns=[
     path('register/',RegisterView.as_view(),name='register'),
     path('login/',TokenObtainPairView.as_view(),name='token_obtain'),
     path('refresh/',TokenRefreshView.as_view(),name="token_refresh"),
+    path('logout/', LogoutView.as_view(), name='auth-logout'),
     #FILE CRUD
     path('upload/', FileUploadView.as_view(), name='file-upload'),
     path('list/', FileListView.as_view(), name='file-list'),
