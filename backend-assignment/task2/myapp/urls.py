@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
-from myapp.views import RegisterView, AdditionView
+from myapp.views import RegisterView, AdditionView, SubtractionView
 
 
 urlpatterns = [
@@ -9,5 +9,5 @@ urlpatterns = [
     path('refresh/',TokenRefreshView.as_view(),name="token_refresh"),
     #ARITHMETIC OPERATIONS
     path('calculate/sum/<str:num1>/<str:num2>/',AdditionView.as_view(),name='add-operation'),
-
+    path('calculate/difference/<str:num1>/<str:num2>/',SubtractionView.as_view(),name='sub-operation'),
 ]
