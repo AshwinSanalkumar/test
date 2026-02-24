@@ -58,3 +58,21 @@ class SubtractionView(APIView):
             "operation": "difference",
             "result": result
         }, status=status.HTTP_200_OK)
+    
+class DivisionView(APIView):
+    permission_classes=[IsAuthenticated]
+
+    def get(self,request,num1,num2):
+        result= ArithmeticService.quotient(num1,num2)
+
+        if result is None:
+            if str(num2) == "0":
+                 return Response({"error": "Division by zero is not allowed."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error":"Invalid Input. Both parameters must be numbers."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return Response({
+            "operation": "Division",
+            "result": result
+        }, status=status.HTTP_200_OK)

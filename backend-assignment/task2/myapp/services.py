@@ -28,3 +28,12 @@ class ArithmeticService:
             return float(num1) - float(num2)
         except (ValueError,TypeError):
             return None
+        
+    @staticmethod
+    def quotient(num1 , num2):
+        try:
+            if float(num2)==0:
+                return None
+            return float(num1) / float (num2)
+        except (ValueError,TypeError):
+            return None
