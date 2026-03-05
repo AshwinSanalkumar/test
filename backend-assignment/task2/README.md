@@ -114,7 +114,8 @@ http://127.0.0.1:8000
 
 # API Endpoints
 
-## Authenication
+<details>
+<summary><strong>Authentication</strong></summary>
 
 ### Register
 
@@ -168,7 +169,8 @@ Body :
 ```
 
 ---
-## ARITHMETIIC OPERATIONS
+<details>
+<summary><strong>Arithmetic Operations</strong></summary>
 ## Addition
 ```
 GET /calculate/sum/<str:num1>/<str:num2>/
