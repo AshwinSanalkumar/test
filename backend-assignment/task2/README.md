@@ -169,6 +169,7 @@ Body :
 ```
 
 ---
+</details>
 <details>
 <summary><strong>Arithmetic Operations</strong></summary>
 ## Addition
@@ -191,7 +192,7 @@ GET /calculate/divide/<str:num1>/<str:num2>/
 GET /calculate/multiply/<str:num1>/<str:num2>/
 ```
 ---
-
+</details>
 
 # Security Notes
 
