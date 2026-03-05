@@ -131,7 +131,6 @@ Body :
     "password_confirm": "your_password
 }
 ```
----
 
 ### Login
 
@@ -144,7 +143,7 @@ Body :
 }
 ```
 
----
+
 
 ### Token Refresh
 
@@ -156,7 +155,6 @@ Body :
 }
 ```
 
----
 
 ### Logout
 
@@ -168,7 +166,7 @@ Body :
 }
 ```
 
----
+
 </details>
 
 <details>
@@ -176,24 +174,24 @@ Body :
 
 ## Addition
 ```
-GET /calculate/sum/<str:num1>/<str:num2>/
+GET /calculate/sum/<num1>/<num2>/
 ```
----
+
 ## Subtraction
 ```
-GET /calculate/difference/<str:num1>/<str:num2>/
+GET /calculate/difference/<num1>/<num2>/
 ```
----
+
 ## Division
 ```
 GET /calculate/divide/<str:num1>/<str:num2>/
 ```
----
+
 ## Multiplication
 ```
 GET /calculate/multiply/<str:num1>/<str:num2>/
 ```
----
+
 </details>
 
 # Security Notes
