@@ -1,50 +1,46 @@
 # Arithmetic API TASK-2
 
-A simple REST API built with **Django** and **Django REST Framework** that performs basic arithmetic operations
-(addition, subtraction, multiplication, division) on two numbers.
+A simple REST API built with **Django** and **Django REST Framework** that performs basic arithmetic operations (addition, subtraction, multiplication, division) on two numbers.
 
 Each API endpoint accepts **two numbers as parameters** and returns the result of the corresponding arithmetic operation.
 
 ---
 
-# Features
+## Features
 
-* REST API design
-* Basic arithmetic operations
-* Environment variable support using `.env`
-
----
-
-# Tech Stack
-
-* Python
-* Django
-* Django REST Framework
-* python-dotenv
+* **REST API Design**: Clean and predictable endpoint structure.
+* **Arithmetic Operations**: Support for basic math logic.
+* **Security**: Environment variable support using `.env` for sensitive configurations.
+* **Authentication**: JWT-based user registration and login.
 
 ---
 
-# Project Structure
+## Tech Stack
 
-```
+* **Python**
+* **Django**
+* **Django REST Framework**
+* **python-dotenv**
+
+---
+
+## Project Structure
+
+```text
 backend-assignment/
 │
-├──task1
-└──task2/
-    │
+├── task1/
+└── task2/
     ├── calculator/
     │   ├── views.py
     │   ├── urls.py
     │   ├── models.py
     │   ├── services.py
-    │   ├── urls.py
     │   ├── tests.py
     │   └── serializers.py
-    │
     ├── config/
     │   ├── settings.py
     │   └── urls.py
-    │
     ├── .env.example
     ├── manage.py
     └── requirements.txt
@@ -86,9 +82,6 @@ This project uses environment variables for sensitive settings.
 ```bash
 cp .env.example .env
 ```
-
-2. Copy the example environment file
-
 
 # Run the Project
 
