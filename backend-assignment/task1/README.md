@@ -110,22 +110,25 @@ http://127.0.0.1:8000
 <details>
 <summary><strong>Authentication</strong></summary>
 
+```bash
 POST /api/register/          #Create new account
 POST /api/login/             #login to existing account
 POST /api/refresh/           #Generate new Access token using Refresh Token
 POST /api/logout/            #logut (blacklist Refresh token)
-
+```
 ---
 </details>
 
 <details>
 <summary><strong>Product Management</strong></summary>
 
+```bash
 GET /api/products/                             # list Products
 POST /api/products/add/                        # Add new products
 GET /api/products/view/<product_id>/           # view details of a product
 PUT /api/products/update/<product_id>/         # Update a product
 DELETE /api/products/delete/<product_id>/      # Delete a Product
+```
 
 ---
 </details>
@@ -133,10 +136,12 @@ DELETE /api/products/delete/<product_id>/      # Delete a Product
 <details>
 <summary><strong>Secure File Management</strong></summary>
 
+```bash
 POST /api/files/upload/                        # Upload a file
 GET /api/files/list/                           # List the uploaded files
 POST /api/files/<file_id>/generate-link/       # Genrate secure Download link 
 GET /api/file/download/<token>/                # Download the file
+```
 
 </details>
 
