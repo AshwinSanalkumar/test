@@ -170,8 +170,10 @@ Body :
 
 ---
 </details>
+
 <details>
 <summary><strong>Arithmetic Operations</strong></summary>
+
 ## Addition
 ```
 GET /calculate/sum/<str:num1>/<str:num2>/
