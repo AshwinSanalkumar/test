@@ -1,0 +1,205 @@
+# Arithmetic API TASK-2
+
+A simple REST API built with **Django** and **Django REST Framework** that performs basic arithmetic operations
+(addition, subtraction, multiplication, division) on two numbers.
+
+Each API endpoint accepts **two numbers as parameters** and returns the result of the corresponding arithmetic operation.
+
+---
+
+# Features
+
+* REST API design
+* Basic arithmetic operations
+* Environment variable support using `.env`
+
+---
+
+# Tech Stack
+
+* Python
+* Django
+* Django REST Framework
+* python-dotenv
+
+---
+
+# Project Structure
+
+```
+backend-assignment/
+│
+├──task1
+└──task2/
+    │
+    ├── calculator/
+    │   ├── views.py
+    │   ├── urls.py
+    │   ├── models.py
+    │   ├── services.py
+    │   ├── urls.py
+    │   ├── tests.py
+    │   └── serializers.py
+    │
+    ├── config/
+    │   ├── settings.py
+    │   └── urls.py
+    │
+    ├── .env.example
+    ├── manage.py
+    └── requirements.txt
+
+```
+
+---
+
+# Installation & Setup
+
+### 1 Clone the repository
+
+```bash
+git clone <repository-url>
+cd <backend-assignment/task2>
+```
+
+### 2 Create a virtual environment
+
+```bash
+python -m venv venv
+source venv/bin/activate
+```
+
+### 3 Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+# Environment Variables
+
+This project uses environment variables for sensitive settings.
+
+1. Copy the example environment file:
+
+```bash
+cp .env.example .env
+```
+
+2. Copy the example environment file
+
+
+# Run the Project
+
+Apply migrations:
+
+```bash
+python manage.py migrate
+```
+
+Start the server:
+
+```bash
+python manage.py runserver
+```
+
+Server runs at:
+
+```
+http://127.0.0.1:8000
+```
+
+---
+
+# API Endpoints
+
+## Authenication
+
+### Register
+
+```
+POST /api/register/
+Body :
+{
+    "username": "test_user",
+    "email": "testemail@gmail.com",
+    "first_name": "your_first_name",
+    "last_name": "your_last_name
+    "password": "your_password
+    "password_confirm": "your_password
+}
+```
+---
+
+### Login
+
+```
+POST /api/login
+Body :
+{
+    "username": "test_user",
+    "password": "your_password
+}
+```
+
+---
+
+### Token Refresh
+
+```
+POST /api/refresh/
+Body :
+{
+    "refresh": "your_refresh_token"
+}
+```
+
+---
+
+### Logout
+
+```
+POST /api/logout/
+Body :
+{
+    "refresh": "your_refresh_token"
+}
+```
+
+---
+## ARITHMETIIC OPERATIONS
+## Addition
+```
+GET /calculate/sum/<str:num1>/<str:num2>/
+```
+---
+## Subtraction
+```
+GET /calculate/difference/<str:num1>/<str:num2>/
+```
+---
+## Division
+```
+GET /calculate/divide/<str:num1>/<str:num2>/
+```
+---
+## Multiplication
+```
+GET /calculate/multiply/<str:num1>/<str:num2>/
+```
+---
+
+
+# Security Notes
+
+* `.env` file is excluded from version control.
+* `.env.example` provides the required environment variables.
+
+---
+
+# Author
+
+Ashwin Sanalkumar
+
+---
