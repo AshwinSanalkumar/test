@@ -30,14 +30,14 @@ backend-assignment/
 │
 ├── task1/
 |   |
-|   ├── api/
+|   ├── api/                          Main application
 |   │   ├── views.py
 |   │   ├── urls.py
 |   │   ├── models.py
 |   │   ├── services.py
 |   │   ├── tests.py
 |   │   └── serializers.py
-|   ├── config/
+|   ├── config/                       Project          
 |   │   ├── settings.py
 |   │   └── urls.py
 |   ├── .env.example
